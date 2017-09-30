@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, height=device-height, minimum-scale=1.0, initial-scale=1.0, user-scalable=0">
+  <title>Photo Álbun Web</title>
+  <meta name="description" content="Una galería con increíbles imágenes.">
+  <link rel="icon" sizes="192x192" href="http://mialbum.ga/site/css/icon.png">
+
+  <script src="http://localhost:35729/livereload.js" charset="utf-8"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="config.js" charset="utf-8"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+
+  <style media="screen">
+
+    @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400');
+
+    body, html {
+      width: 100%;
+      height: 100vh;
+      font-family: 'Open Sans', sans-serif;
+      color: #f1f1f1;
+      -webkit-box-sizing: border-box;
+              box-sizing: border-box;
+    }
+    body {
+      max-width: 100%;
+      max-height: 100vh;
+      overflow: hidden;
+      background-color: #212121;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1.8vw;
+      font-weight: 300;
+      line-height: 1.5;
+    }
+    hr {
+      border-top: 1px dashed #8c8b8b;
+	    border-bottom: 1px dashed #fff;
+      opacity: .6;
+    }
+    h1 {
+      margin-top: 10px;
+      font-weight: 300;
+      opacity: .6;
+    }
+    a, a:hover, a:visited {
+      text-decoration: none;
+      color: #4687cb;
+    }
+    small {
+      font-size: 1.5vw;
+    }
+
+    /*Botones de Navegación*/
+    .navCtrl {
+      font-size: 38px;
+      color: #555555;
+      font-weight: 600;
+    }
+    .navCtrl:hover {
+      background-color: #f5f5f5;
+    }
+    .panel .navCtrl:hover {
+      background-color: #212121;
+      color: #f5f5f5;
+    }
+    .ctrlLeft {
+      position: absolute;
+      top: 50%;
+      left: 0;
+    }
+    .ctrlRight {
+      position: absolute;
+      top: 50%;
+      right: 0;
+    }
+    .twoColumn {
+      box-sizing: border-box;
+      display: flex;
+      flex-wrap: wrap;
+      min-height: 100%;
+    }
+    .twoColumn > div {
+      box-sizing: border-box;
+      flex-basis: 50%;
+      padding-right: 25px;
+    }
+
+    /*Galería Principal*/
+    .gallery {
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      padding: 38px 38px;
+      width: 100%;
+      height: 100vh;
+      max-width: 100%;
+      max-height: 100vh;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+              justify-content: center;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+              align-items: center;
+    }
+    .currentImage {
+      box-sizing: border-box;
+      height: auto;
+      max-height: 100%;
+      width: auto;
+      max-width: 100%;
+    }
+    .currentImage.imgFrame {
+      background-color: white;
+      padding: 10px;
+    }
+    .footer {
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
+      height: 15px;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      color: #555555;
+      font-size: 12px;
+      padding: 0 5px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 2px;
+    }
+    .footer a {
+      color: #555555;
+    }
+    .footer a:hover {
+      color: #f5f5f5;
+    }
+
+    /*Paneles Laterales*/
+    .panel {
+      -webkit-box-sizing: border-box;
+              box-sizing: border-box;
+      position: absolute;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      max-width: 100%;
+      min-height: 100vh;
+      max-height: 100vh;
+      padding: 40px;
+      background-color: #f5f5f5;
+      color: #212121;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      transition: all 1.3s ease;
+    }
+    .panel > div {
+      border: 1px solid #676767;
+      width: 100%;
+      overflow: auto;
+      padding: 10px;
+      padding-right: 30px;
+    }
+
+    /*Panel Info*/
+    .panelInfo * {
+      /*border: 1px solid red;*/
+    }
+    .panelInfo {
+      display: flex;
+      justify-content: space-around;
+      text-align: left;
+    }
+    .panelInfo footer {
+      flex-basis: 100%;
+      align-self: flex-end;
+    }
+    .panelInfo i.material-icons,
+    .panelInfo span {
+      font-size: 120%;
+    }
+    .panelInfo span {
+      font-weight: 400;
+      vertical-align: middle;
+    }
+    .panelInfo i.infoIcon {
+      color: #757575;
+      position: relative;
+      top: .5vw;
+      opacity: .7;
+    }
+    .panelInfo.close {
+      left: -100%;
+    }
+
+    /*Panel Mosaic*/
+    .panelMosaic.close {
+      left: 100%;
+    }
+
+    ul.mosaicList {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    ul.mosaicList li {
+      margin: 10px;
+      width: 180px;
+      height: 180px;
+    }
+
+    ul.mosaicList img {
+      border-radius: 3px;
+      max-width: 100%;
+      max-height: 100%;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    }
+
+    /*Controles Principales*/
+    .mainControls {
+      position: absolute;
+      top: 0;
+      right: 0;
+      color: gray;
+      height: 35px;
+      overflow: hidden;
+      text-align: right;
+      margin: 2px;
+      margin-right: 10px;
+      transition: all 1s ease;
+      display: flex;
+    }
+    .mainControls i {
+      font-size: 28px;
+      padding: 0 5px;
+    }
+    .mainControls i:hover {
+      background-color: #212121;
+      color: #f5f5f5;
+      font-weight: 400;
+    }
+
+  </style>
+  <script type="text/javascript">
+  var panelInfo, openInfo, closeInfo, thisImg, prevImg, nextImg, mosaicImg;
+  thisImg = 1;
+
+  $( document ).ready(function() {
+    if(data.debug) console.info('DOM initialized');
+
+    // Caching object
+    panelInfo = $('.panelInfo');
+    openInfo = $('.openInfo');
+    closeInfo = $('.closeInfo');
+    panelMosaic = $('.panelMosaic');
+    openMosaic = $('.openMosaic');
+    closeMosaic = $('.closeMosaic');
+    mosaicImg = $('.mosaicImg');
+    btnFullscreen = $('.Full');
+    btnPlay = $('.Play');
+    togglePlay = $('.Play, .currentImage');
+
+
+    // Key prees
+    $(document).on('keyup', function(e) {
+      if(data.debug) console.info('Keyup press !!! '+e.keyCode);
+      t = e.keyCode;
+      console.log(t);
+      if(t==32) player.toggle();  // toggle Play ~ Pause
+      if(t==40) player.prev();  // Prev image
+      if(t==38) player.next();  // Next image
+      if(t==37) {  // Left arrow <-
+        if( !opPanels('.panelMosaic') && !opPanels('.panelInfo') ) opPanels('.panelMosaic', true) // Open Panel Mosaic
+        if( opPanels('.panelInfo') ) opPanels('.panelInfo', false) // Close Panel Mosaic
+      }
+      if(t==39) {  // Right arrow ->
+        if( !opPanels('.panelInfo') && !opPanels('.panelMosaic') ) opPanels('.panelInfo', true) // Open Panel Info
+        if( opPanels('.panelMosaic') ) opPanels('.panelMosaic', false) // Close Panel Mosaic
+      }
+      if(t==13){ // Toggle fullscreen (ENTER Key)
+        toggleFullScreen();
+      }
+
+    // document keyup
+    });
+
+
+    // Cambia a pantalla completa
+    btnFullscreen.on('click', function() {
+      if(data.debug) console.info('Toggle fullscreen mode');
+      toggleFullScreen();
+    });
+    // Toggle (Play/Pause) button
+    togglePlay.on('click', function() {
+      player.toggle();
+    });
+
+    // Open Info
+    $(openInfo).on('click', function(){
+      player.stop();
+      panelInfo.removeClass('close');
+      if(data.debug) console.info('panelInfo is open');
+    });
+    // Close Info
+    closeInfo.on('click', function(){
+      panelInfo.addClass('close');
+      if(data.debug) console.info('panelInfo is close');
+    });
+    // Open Gallery
+    openMosaic.on('click', function(){
+      player.stop();
+      panelMosaic.removeClass('close');
+      if(data.debug) console.info('panelGallery is open');
+    });
+    // Close Gallery
+    closeMosaic.on('click', function(){
+      panelMosaic.addClass('close');
+      if(data.debug) console.info('panelGallery is close');
+    });
+
+
+    // Lanza init
+    init();
+  });
+
+  function init(){
+    if(data.debug) console.info('start function init()');
+    fillData();
+    fillMosaic();
+
+  }
+
+  function fillData(){
+    if(data.debug) console.info('start function fillData()');
+    document.title = data.eNombre; // Cambia el Título de la Página
+    if(data.debug) console.info('change title page');
+    $('.currentImage').attr('alt', data.eNombre );
+    $('.currentImage').attr('title', data.eNombre );
+    $('.eNombre').text( data.eNombre );
+    $('.eUbicacion').text( data.eUbicacion );
+    $('.eFecha').text( data.eFecha );
+    $('.eFotos').text( data.eFotos + ' imágenes.');
+    $('.eDuracion').text( parseInt(data.eFotos * data.timeInterval / 60000) + ' minutos.');
+    $('.fNombre').text( data.fNombre );
+    $('span.fWeb').text( data.fWeb ); $('a.fWeb').attr( 'href', data.fWeb );
+    $('span.fMail').text( data.fMail ); $('a.fMail').attr( 'href', 'mailto:' + data.fMail );
+    $('span.fTel').text( data.fTel ); $('a.fTel').attr( 'href', 'tel:' + data.fTel.replace(/[^0-9]/gi, '') );
+
+    // Get General config
+    if(data.imgFrame) $('.currentImage').addClass('imgFrame');
+    if(data.debug) console.info('fill data in panelInfo');
+    if(data.pausePlay) player.stop();
+        else player.start();
+  }
+
+  var player = [];
+  // Activa el reproductor
+  player.rep = function(){
+    if(data.debug) console.info('start function player.rep()');
+    if(!data.pausePlay){
+      if(!thisImg) thisImg = 1;
+      if(thisImg == data.eFotos ) thisImg = 0;
+      thisImg++;
+      player.change(thisImg);
+    }
+  };
+
+  // Pausa el Reproductor
+  player.stop = function() {
+    if(data.debug) console.info('start function player.stop()');
+    data.pausePlay = true;
+    btnPlay.text('play_arrow');
+  };
+  // Pausa el Reproductor
+  player.start = function() {
+    if(data.debug) console.info('start function player.start()');
+    data.pausePlay = false;
+    btnPlay.text('pause');
+  };
+  player.toggle = function() {
+    if(data.debug) console.info('Toggle (Play/Pause) gallery');
+    if(data.pausePlay) player.start();
+      else player.stop();
+  };
+  player.change = function(img) {
+    if(data.debug) console.info('start function player.change()');
+    thisImg = img;
+    var i = $('.currentImage');
+    var f = data.imgPath + thisImg + data.imgType;
+    i.attr('src', f);
+    if(data.debug) console.info('load image ' + thisImg+' of ' + data.eFotos);
+  };
+  player.next = function() {
+    if(data.debug) console.info('start function player.next()');
+    player.stop();
+    if(thisImg == data.eFotos ) thisImg = 1;
+    else thisImg++;
+    player.change(thisImg);
+  };
+  // Cambia a la imagen anterior
+  player.prev = function() {
+    if(data.debug) console.info('start function player.prev()');
+    player.stop();
+    if(thisImg == 1 ) thisImg = data.eFotos;
+    else thisImg--;
+    player.change(thisImg);
+  };
+
+  function fillMosaic(){
+    if(data.debug) console.info('start function fillMosaic()');
+    var ul = $('.mosaicList');
+    var li = [];
+    for (var i = 1; i <= data.eFotos; i++) {
+      li.push( '<li><img src="' + data.imgPath + i + data.imgType + '" id="'+i+'" alt="'+data.eNombre+'" title="'+data.eNombre+'" class="mosaicImg"></li>' );
+    }
+    ul.empty().append(li);
+
+    // Click on panelMosaic imagen
+    $('.mosaicList img').on('click', function(e){
+      img = $(e.target).attr('id');
+      if(data.debug) console.info('click over mosaic image: '+img);
+      player.stop();
+      player.change(img);
+      closeMosaic.click();
+    });
+
+
+  }
+
+  // Panel operations
+  function opPanels(panel, acction){
+    if(!panel) return;
+
+    // Get panel status
+    if(acction === undefined) return !$(panel).hasClass('close');
+    // Open Panel
+    if(acction === true) {
+      if(data.debug) console.info('Opening panel: '+panel);
+      $(panel).removeClass('close');
+      player.stop();
+    }
+    // Close Panel
+    if(acction === false){
+      if(data.debug) console.info('Closing panel: '+panel);
+      $(panel).addClass('close');
+    }
+  }
+
+
+  //Toggle Fuulscrenn mode
+  function toggleFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement;
+    var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+    var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+    if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+      requestFullScreen.call(docEl);
+      btnFullscreen.text('clear');
+    }
+    else {
+      cancelFullScreen.call(doc);
+      btnFullscreen.text('zoom_out_map');
+    }
+  }
+
+
+  setInterval(function() {
+    player.rep();
+  }, data.timeInterval);
+
+  </script>
+
+</head>
+<body>
+  <div class="gallery">
+    <img src="imgs/1.jpg" alt="Jorge y Jasmín" class="currentImage">
+    <div class="ctrlLeft"><i class="material-icons navCtrl openInfo" title="Más Información">keyboard_arrow_right</i></div>
+    <div class="ctrlRight"><i class="material-icons navCtrl openMosaic" title="Mosaico de Imágenes">keyboard_arrow_left</i></div>
+  </div>
+  <div class="mainControls">
+      <i class="material-icons navCtrl mainControl Play" title="Reprodución automática">play_arrow</i>
+      <i class="material-icons navCtrl mainControl Full" title="Pantalla completa">zoom_out_map</i>
+  </div>
+  <div class="footer">
+    <div class="left"><a href="" class="fMail" title="Fotografo del Evento">© <span class="fNombre"></a></div>
+    <div class="right"><a target="_blank" href="http://mialbum.ga/" title="Tu Álbum digital">mialbum.ga</a></div>
+  </div>
+  <div class="panel panelInfo">
+    <div>
+      <div class="ctrlLeft">
+        <i class="material-icons navCtrl closeInfo">keyboard_arrow_left</i>
+      </div>
+      <div class="twoColumn">
+        <div class="left">
+          <h1>Datos del evento</h1><hr>
+          <i class="material-icons infoIcon" title="Evento">filter_center_focus</i> <span class="eNombre"></span>
+          <i class="material-icons infoIcon" title="Fecha del evento">date_range</i>  <span class="eFecha"></span>
+          <i class="material-icons infoIcon" title="Ubicación">location_on</i>  <span class="eUbicacion"></span>
+          <i class="material-icons infoIcon" title="Cantidad de imágenes">photo_library</i>  <span class="eFotos"></span>
+          <i class="material-icons infoIcon" title="Tiempo de reproducción">timelapse</i>  <span class="eDuracion"></span>
+        </div>
+        <div class="right">
+          <h1>Datos Fotógrafo</h1><hr>
+          <i class="material-icons infoIcon" title="Fotógrafo del evento">camera</i> <span class="fNombre"></span>
+          <i class="material-icons infoIcon" title="Sitio Web">public</i> <a href="" target="_blank" class="fWeb"> <span class="fWeb"></span></a>
+          <i class="material-icons infoIcon" title="Correo electrónico">mail_outline</i> <a href="" class="fMail"><span class="fMail"></span></a>
+          <i class="material-icons infoIcon" title="Teléfono">phone_iphone</i> <a href="" target="_blank" class="fTel"><span class="fTel"></span></a>
+        </div>
+        <footer>
+          <small>Los derechos sobre las imágenes de este álbum son propiedad de <span class="fNombre">Germán Aliprandi</span>.</small>
+        </footer>
+      </div>
+    </div>
+  </div>
+  <div class="panel panelMosaic close">
+    <div>
+      <div class="ctrlLeft"><i class="material-icons navCtrl closeMosaic">keyboard_arrow_right</i></div>
+      <ul class="mosaicList">
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
